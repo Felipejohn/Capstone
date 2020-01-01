@@ -57,10 +57,10 @@ app.use(trans_uploadRoutes);
 
 
 //-------------------------------SERVER INIT------------------------------------
-/*app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server initiated (port " + process.env.PORT + ")...");
-});*/
-
-app.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+/*app.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+});*/
