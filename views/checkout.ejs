@@ -1,0 +1,170 @@
+<% include partials/header %>
+
+
+        <title>RFP | Checkout</title>
+        
+<%
+function formatID(id, des_length) {
+    var f_ID = "";
+    for (var i = 1; i <= des_length - id.toString().length; i++){
+        f_ID += "0";
+    }
+    return f_ID + id;
+} 
+%>
+<%
+function format1(d) {
+    var year = d.getFullYear();
+    var month = d.getMonth() + 1;
+    var date = d.getDate();
+    var day = d.getDay();
+    var hour = d.getHours();
+    var minute = d.getMinutes();
+    var ampm;
+    var weekday = ["Sun","Mon","Tue","Wed","Thurs","Fri","Sat"]
+    if(hour >= 13){
+        hour = hour - 12;
+    }
+    if(minute < 10){
+        minute = "0" + minute;
+    }
+    if(hour >= 12){
+        ampm = "PM";
+    } else {
+        ampm = "AM";
+    }
+    return weekday[day] + " " + month + "/" + date + "/" + year + " " + hour + ":" + minute + " " + ampm;
+} 
+%>
+
+<%
+function formatDate(d) {
+    var year = d.getFullYear();
+    var month = d.getMonth() + 1;
+    var date = d.getDate();
+    var hour = d.getHours();
+    var minute = d.getMinutes();
+    if(minute < 10){
+        minute = "0" + minute;
+    }
+    if (hour < 10){
+        hour = "0" + hour;
+    }
+    return year + "-" + month + "-" + date + " "+ hour + ":" + minute + ":" + "00";
+} 
+%>        
+
+        
+    </head>
+    <body>
+        
+<% include partials/navbar %>
+
+    <div class="header-bar">
+        <h1>Checkout Devices for Events</h1>
+    </div>
+   
+    <br>
+    
+    <div class="content">
+        
+        <div class="card">
+            <form class="add-form" action="/checkout/<%= events[0].ev_ID %>" method="POST">
+                <div class="ui form">
+                    <div class="fields">
+                        <div class="field">
+                            <label>Event Name | Date</label>
+                            <div class="ui big label label-total">
+                                    <%= events[0].ev_Name  + " | " + format1(events[0].ev_StartDate) %>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="fields">
+                        <div class="field">
+                            <a class="ui secondary button fixed-size-button" href="/events">Done</a>
+                        </div>
+                    </div>    
+                </div>
+            </form>
+        </div>
+    
+        <div id="checkout-tables">
+            
+            <table id="checkout-1" class="ui selectable inverted striped small table">
+            
+                <thead>
+                    <tr>
+                        <th>Devices Available</th>
+                        <th>Description</th>
+                        <th>Checkout</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <% for(var i = 0; i < devices.length; i++){ %>
+                    <tr>
+                        <td><%= devices[i].dev_Name %></td>
+                        <td><%= devices[i].dev_Description %></td>
+                        <td class="right aligned">
+                                <form action="/checkout_add" method="POST">
+                                    <input type='hidden' name='a_dev_ID' value="<%= devices[i].dev_ID %>">
+                                    <input type='hidden' name='a_ev_StartDate' value="<%= formatDate(events[0].ev_StartDate) %>">
+                                    <input type='hidden' name='a_ev_EndDate' value="<%= formatDate(events[0].ev_EndDate) %>">
+                                    <input type='hidden' name='a_ev_ID' value="<%= events[0].ev_ID %>">
+                                    <input class="ui secondary mini button edit-button" type="submit" value="Add">
+                                </form>    
+                        </td>
+                    </tr>
+                    <%} %>
+                </tbody>
+                
+            </table>
+            
+            <table id="checkout-2" class="ui selectable inverted striped small table">
+    
+                <thead>
+                    <tr>
+                        <th>Devices Loaned</th>
+                        <th>Description</th>
+                        <th>Return</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                        <% for(var i = 0; i < ev_has_dev.length; i++){ %>
+                            <tr>
+                                    <td><%= ev_has_dev[i].dev_Name %></td>
+                                    <td><%= ev_has_dev[i].dev_Description %></td>
+                                    <td class="right aligned">
+                                        <form action="/checkout_return" method="POST">
+                                            <% if (ev_has_dev[i].ev_DtReturn == null){  %>
+                                                <input type='hidden' name='r_evdev_ID' value="<%= ev_has_dev[i].evdev_ID %>">
+                                                <input type='hidden' name='r_dev_ID' value="<%= ev_has_dev[i].dev_ID %>">
+                                                <input type='hidden' name='r_ev_ID' value="<%= events[0].ev_ID %>">
+                                                <input class="ui secondary mini button edit-button" type="submit" value="Return">
+                                            <%}else{ %>
+                                                <input class="ui secondary mini button edit-button" disabled=true type="submit" value="Return">
+                                            <%}%>    
+                                        </form>
+                                        <form action="/checkout_remove" method="POST">
+                                            <button class="ui secondary mini button remove-button" data-modal="<%= ev_has_dev[i].evdev_ID %>">Remove</button>
+                                            <input type='hidden' name='d_ev_ID' value="<%= events[0].ev_ID %>">
+                                            <input type='hidden' name='d_dev_ID' value="<%= ev_has_dev[i].dev_ID %>">
+                                            <input type='hidden' name='d_evdev_ID' value="<%= ev_has_dev[i].evdev_ID %>">
+                                            <% if(ev_has_dev.length == 1){ %>
+                                                <input type='hidden' name="flag_Update" value="1">
+                                            <%}else{%>
+                                                <input type='hidden' name="flag_Update" value="0">
+                                            <%}%>
+                                        </form>
+                                    </td>
+                            </tr>
+                        <%} %>
+                    </tbody>
+                    
+            </table>
+    
+        </div>
+    </div>
+
+<% include partials/footer %>

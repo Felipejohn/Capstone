@@ -1,0 +1,25 @@
+<% include partials/header %>
+
+
+        <title>RFP | Home</title>
+        
+    </head>
+    <body>
+        
+    <% include partials/navbar %>
+    
+    <div class="header-bar">
+        <h1>Events Calendar</h1>
+    </div>
+    
+    <div class="content">
+        <br>
+        <div id="calendar"></div>
+    </div>
+    
+    
+<script>
+    const events = <%- JSON.stringify(events, null, 2); %>
+</script>
+
+<% include partials/footer %>
